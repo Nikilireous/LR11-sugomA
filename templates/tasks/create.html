@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Новая задача{% endblock %}
+
+{% block content %}
+<h1>Создать новую задачу</h1>
+
+<form method="POST" action="{{ url_for('tasks.create') }}" class="task-form">
+    <div class="form-group">
+        <label for="name">Название задачи:</label>
+        <input type="text" id="name" name="name" required 
+               class="form-control" placeholder="Введите название задачи">
+    </div>
+    
+    <div class="form-group">
+        <label for="details">Описание:</label>
+        <textarea id="details" name="details" rows="4" 
+                  class="form-control" placeholder="Подробное описание задачи"></textarea>
+    </div>
+    
+    <div class="form-group">
+        <label for="priority">Приоритет:</label>
+        <select id="priority" name="priority" class="form-control">
+            <option value="1">Низкий</option>
+            <option value="2" selected>Средний</option>
+            <option value="3">Высокий</option>
+        </select>
+    </div>
+    
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Создать задачу</button>
+        <a href="{{ url_for('tasks.index') }}" class="btn btn-secondary">Отмена</a>
+    </div>
+</form>
+
+<style>
+    .task-form {
+        max-width: 600px;
+        margin-top: 20px;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #495057;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 1rem;
+        box-sizing: border-box;
+    }
+    
+    .form-control:focus {
+        border-color: #80bdff;
+        outline: none;
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+    }
+    
+    textarea.form-control {
+        resize: vertical;
+        min-height: 100px;
+    }
+    
+    .form-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+    }
+    
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+    }
+</style>
+{% endblock %}

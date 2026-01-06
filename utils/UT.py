@@ -33,6 +33,7 @@ class Database_user_task:
         __command = "INSERT INTO user_task (priority, status, date, user_id, task_id) VALUES (?, ?, ?, ?, ?)"
         self.__cursor.execute(__command, task)
         self.__con.commit()
+        return self.__cursor.lastrowid
 
     def update(self, task: list):
         """Update task in database by task_id and user_id.
@@ -95,7 +96,7 @@ class Database_user_task:
         return self.__cursor.fetchall()
 
 
-    def close(self, *, delete='False'):
+    def close(self, *, delete=False):
         """Clear database"""
         __command = "DROP TABLE IF EXISTS user_task"
         if delete:
