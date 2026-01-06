@@ -1,10 +1,139 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>error</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-</body>
-</html>
+{% block title %}Страница не найдена - 404{% endblock %}
+
+{% block content %}
+<div class="error-container">
+    <div class="error-card">
+        <div class="error-icon">404</div>
+        <h1 class="error-title">Страница не найдена</h1>
+        <p class="error-message">
+            Запрашиваемая страница не существует или была перемещена. 
+            Пожалуйста, проверьте адрес или воспользуйтесь навигацией ниже.
+        </p>
+        
+        <div class="error-actions">
+            <a href="{{ url_for('index') }}" class="btn btn-primary">
+                <i class="arrow-icon">←</i> Вернуться на главную
+            </a>
+            
+            {% if 'user_id' in session %}
+                <a href="{{ url_for('tasks.index') }}" class="btn btn-secondary">
+                    Перейти к моим задачам
+                </a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}" class="btn btn-secondary">
+                    Войти в аккаунт
+                </a>
+            {% endif %}
+        </div>
+        
+        <div class="error-footer">
+            <p>Если вы считаете, что это ошибка, пожалуйста, свяжитесь с поддержкой</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .error-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+        padding: 20px;
+    }
+    
+    .error-card {
+        width: 100%;
+        max-width: 600px;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08);
+        padding: 40px;
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+    
+    .error-icon {
+        font-size: 5rem;
+        font-weight: 800;
+        color: #e74c3c;
+        margin-bottom: 20px;
+        letter-spacing: 2px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .error-title {
+        font-size: 2.2rem;
+        color: #2c3e50;
+        margin-bottom: 15px;
+        font-weight: 700;
+    }
+    
+    .error-message {
+        color: #7f8c8d;
+        font-size: 1.1rem;
+        margin-bottom: 35px;
+        line-height: 1.6;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .error-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin: 30px 0;
+    }
+    
+    .arrow-icon {
+        margin-right: 8px;
+        display: inline-block;
+        font-weight: bold;
+    }
+    
+    .error-footer {
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+        color: #95a5a6;
+        font-size: 0.95rem;
+    }
+    
+    /* Адаптивность для мобильных устройств */
+    @media (max-width: 600px) {
+        .error-card {
+            padding: 30px 20px;
+        }
+        
+        .error-icon {
+            font-size: 4rem;
+        }
+        
+        .error-title {
+            font-size: 1.8rem;
+        }
+        
+        .error-actions {
+            margin: 20px 0;
+        }
+    }
+    
+    /* Анимация при загрузке */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .error-card {
+        animation: fadeInUp 0.6s ease-out;
+    }
+</style>
+{% endblock %}
