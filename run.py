@@ -1,17 +1,14 @@
 from flask import Flask, render_template
-from flask_login import LoginManager, UserMixin
 
-class User(UserMixin):
-    pass
+from controller.user_controller import auth_bp
+from controller.task_controller import tasks_bp
 
 
 app = Flask(__name__)
-login_manager = LoginManager()
-login_manager.init_app(app)
+app.config.from_object('app.config.Config')
 
-login_manager.login_view = 'auth.login'
-login_manager.login_message = 'Чтобы вкусить наш сервис, войдите в аккаунт!'
-login_manager.login_message_category = 'info'
+app.register_blueprint(auth_bp)
+app.register_blueprint(tasks_bp)
 
 @app.route('/')
 def index():
@@ -20,13 +17,6 @@ def index():
 @app.errorhandler(404)
 def not_found(error):
     return render_template('errors/error404.html')
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    user = User()
-    user.id = user_id
-    return user
 
 
 if __name__ == '__main__':

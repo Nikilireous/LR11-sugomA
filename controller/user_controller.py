@@ -1,59 +1,66 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request
-from flask_login import login_user, logout_user, current_user
-from bcrypt import hashpw, checkpw, gensalt
+from flask import Blueprint, render_template, redirect, url_for, session, request, flash
+from utils.U import Database_users
+from utils.hash import hash_password, verify_password
 
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
+
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
-    if current_user.is_authenticated:
-        return redirect(url_for('tasks'))
+    if 'user_id' in session:
+        return redirect(url_for('tasks.index'))
 
     if request.method == 'POST':
-        name = request.form.get("username")
-        email = request.form.get("email")
-        password = request.form.get("password")
+        username = request.form['username']
+        email = request.form['email']
+        password = request.form['password']
 
-        # TODO check email not in db
-        db_email = 'something'
+        db_users = Database_users()
+        existing = db_users.select(email)
+        if existing:
+            flash('Пользователь с таким email уже существует', 'danger')
+            db_users.close()
+            return render_template('auth/register.html')
 
-        if email != db_email:
-            flash('Ваш аккаунт успешно создан! Теперь вы можете войти.', 'success')
-            return redirect(url_for('tasks'))
+        hashed_pw = hash_password(password)
+        user_id = db_users.add([username, email, hashed_pw])
+        db_users.close()
 
-        flash('Данная электронная почта уже привязана', 'error')
+        session['user_id'] = user_id
+        session['username'] = username
+        flash('Аккаунт успешно создан!', 'success')
+        return redirect(url_for('tasks.index'))
 
     return render_template('auth/register.html')
 
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
+    if 'user_id' in session:
+        return redirect(url_for('tasks.index'))
 
     if request.method == 'POST':
-        email = request.form.get("email")
-        password: str = request.form.get("password")
+        email = request.form['email']
+        password = request.form['password']
 
-        # TODO check email exists
-        db_email = 'gog@gamil.com'
-        user = 'some user'
+        db_users = Database_users()
+        user = db_users.select(email)
+        db_users.close()
 
-        if user:
-            if checkpw(bytes(password, 'UTF8'), bytes(user.password, 'UTF8')):
-                login_user(user, remember=True)
-                next_page = request.args.get('next')
-                flash('Вы успешно вошли в систему!', 'success')
-                return redirect(next_page) if next_page else redirect(url_for('tasks'))
-        else:
-            flash('Вход не удался. Проверьте email и пароль.', 'danger')
+        if user and verify_password(user[0][3], password):
+            session['user_id'] = user[0][1]
+            session['username'] = user[0][0]
+            flash(f'Добро пожаловать, {user[0][0]}!', 'success')
+            return redirect(url_for('tasks.index'))
+
+        flash('Неверный email или пароль', 'danger')
 
     return render_template('auth/login.html')
 
 
 @auth_bp.route('/logout')
 def logout():
-    logout_user()
-    flash('Вы успешно вышли из системы.', 'info')
-    return redirect(url_for('index'))
+    session.clear()
+    flash('Вы успешно вышли из системы', 'info')
+    return redirect(url_for('auth.login'))
