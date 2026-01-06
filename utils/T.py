@@ -27,6 +27,7 @@ class Database_tasks:
         __command = "INSERT INTO tasks (name, details) VALUES (?, ?)"
         self.__cursor.execute(__command, task)
         self.__con.commit()
+        return self.__cursor.lastrowid  # Возвращаем ID новой записи
 
     def update(self, task: list):
         """Update task details info by name.
@@ -76,7 +77,27 @@ class Database_tasks:
         self.__cursor.execute(__command, (name,))
         return self.__cursor.fetchall()
 
-    def close(self, *, delete='False'):
+    def get_by_id(self, task_id: int) -> list:
+        """Select task by id.
+
+        Input:
+            id (int)
+
+        Output:
+            task (list) :
+                id (int)
+                name (str)
+                details (str)
+        """
+        __command = """
+        SELECT id, name, details
+        FROM tasks
+        WHERE id = ?
+        """
+        self.__cursor.execute(__command, (task_id,))
+        return self.__cursor.fetchone()
+
+    def close(self, *, delete=False):
         """Clear database"""
         __command = "DROP TABLE IF EXISTS tasks"
         if delete:

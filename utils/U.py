@@ -29,6 +29,7 @@ class Database_users:
         __command = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)"
         self.__cursor.execute(__command, user)
         self.__con.commit()
+        return self.__cursor.lastrowid
 
     def update(self, user: list):
         """Update user info by email.
@@ -81,7 +82,7 @@ class Database_users:
         self.__cursor.execute(__command, (email,))
         return self.__cursor.fetchall()
 
-    def close(self, *, delete='False'):
+    def close(self, *, delete=False):
         """Clear database"""
         __command = "DROP TABLE IF EXISTS users"
         if delete:
