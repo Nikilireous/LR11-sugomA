@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}TODO-pizza{% endblock %}</title>
+    <style>
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        .nav { display: flex; justify-content: space-between; padding: 10px 0; }
+        .flash { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .success { background-color: #d4edda; color: #155724; }
+        .danger { background-color: #f8d7da; color: #721c24; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="nav">
+            <div>
+                <a href="{{ url_for('tasks.index') }}">Мои задачи</a>
+                {% if 'user_id' in session %}
+                    <a href="{{ url_for('tasks.create') }}">+ Новая задача</a>
+                {% endif %}
+            </div>
+            <div>
+                {% if 'user_id' in session %}
+                    <span>Привет, {{ session.username }}!</span>
+                    <a href="{{ url_for('auth.logout') }}">Выйти</a>
+                {% else %}
+                    <a href="{{ url_for('auth.login') }}">Войти</a>
+                    <a href="{{ url_for('auth.register') }}">Регистрация</a>
+                {% endif %}
+            </div>
+        </nav>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>
